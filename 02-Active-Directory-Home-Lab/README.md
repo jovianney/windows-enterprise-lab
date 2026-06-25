@@ -74,6 +74,27 @@ All accounts set to require password change on first logon.
 - Lockout duration: 10 minutes
 - Reset counter after: 10 minutes
 
+## Help Desk Simulations
+
+### Password Reset
+![Password reset right-click menu](screenshots/password-reset-right-click.png)
+
+![Password reset dialog](screenshots/password-reset-simulation-BEFORE.png)
+
+![Password reset confirmed](screenshots/password-reset-simulation-AFTER.png)
+
+### Account Disable/Enable
+![Account disabled via PowerShell](screenshots/account-lockout-simulation-BEFORE.png)
+
+![Account is disabled checkbox](screenshots/account-disabled-BEFORE.png)
+
+![Account re-enabled](screenshots/account-disabled-AFTER.png)
+
+### Shared Folder with Group Permissions
+![SharedDocs folder with IT_Staff permissions](screenshots/shared-folder-IT-staff-permissions-AFTER.png)
+
+---
+
 ## Key Lessons
 - ARM64 Windows Server builds are no longer hosted on Microsoft's servers — UTM/QEMU x64 emulation is the only viable path on Apple Silicon
 - Server Manager "Roles: 0" is a known display bug in this Insider Preview build — clicking refresh resolves it
