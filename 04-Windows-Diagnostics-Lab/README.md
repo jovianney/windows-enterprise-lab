@@ -1,5 +1,4 @@
-Copy and paste this entire README into TextEdit:
-markdown# 04 — Windows Diagnostics Lab
+# 04 — Windows Diagnostics Lab
 **Platform:** DC01 — Windows Server 2025 VNext (Build 29602) via UTM 4.7.5 QEMU emulation  
 **Domain:** jovilab.local  
 **CompTIA A+ Core 2 Objectives:** 1.4, 2.2  
@@ -29,14 +28,8 @@ Opened Task Manager and reviewed all four Performance tabs (CPU, Memory, Disk, E
 - High idle CPU on real hardware (>80%) = runaway process, malware, or hardware issue
 - Low available memory (<200MB) consistently = RAM upgrade needed or memory leak
 
-### Screenshots
-- `04-task-manager-default-view.png` — baseline Processes tab on boot
-- `04-task-manager-performance-cpu.png` — CPU graph at idle post-boot
-- `04-task-manager-performance-memory.png` — memory composition breakdown
-- `04-task-manager-performance-disk.png` — disk activity and response time
-- `04-task-manager-performance-ethernet.png` — network adapter confirming jovilab.local
-- `04-resource-monitor-overview.png` — full overview with all four panels
-- `04-resource-monitor-full-overview.png` — per-process CPU, disk, network, memory
+![Task Manager Performance CPU](screenshots/04-task-manager-performance-cpu.png)
+![Resource Monitor Full Overview](screenshots/04-resource-monitor-full-overview.png)
 
 ---
 
@@ -52,7 +45,6 @@ Reviewed all three primary Windows log types on DC01: Security, System, and Appl
 
 **System Log — 8,190 events**
 - Dominated by Event ID **7036 (Service Control Manager)** — services starting and stopping normally. No critical errors or warnings found. DC01 system health confirmed stable.
-- WindowsUpdateClient activity visible — Windows Update running in background.
 
 **Application Log — 890 events**
 - Event ID **8198 (License Activation Failure)** — Windows unable to reach Microsoft activation servers. Error code: 0x87E10BC6. Expected behavior in an evaluation VM with no production license. In a real enterprise environment this would trigger a license compliance review and remediation via `slmgr /ato` or KMS server verification.
@@ -70,15 +62,11 @@ Reviewed all three primary Windows log types on DC01: Security, System, and Appl
 | 6008 | System | Dirty shutdown logged on next boot |
 
 ### Connection to Level 5
-The .evtx log files written by Windows (visible in Resource Monitor during Lab 1) are the same files Wazuh SIEM will ingest automatically at Level 5 — parsing these same event IDs across all machines and alerting on suspicious patterns in real time.
+The .evtx log files written by Windows are the same files Wazuh SIEM will ingest automatically at Level 5 — parsing these same event IDs across all machines and alerting on suspicious patterns in real time.
 
-### Screenshots
-- `04-event-viewer-overview.png` — overview with log summary showing all active logs
-- `04-event-viewer-security-log.png` — Security log with 14,170 events
-- `04-event-viewer-security-failed-logon-4625.png` — filtered view showing real 4625 failed logon
-- `04-event-viewer-system-log.png` — System log, no critical errors confirmed
-- `04-event-viewer-application-log.png` — Application log with error entries visible
-- `04-event-viewer-application-error-8198.png` — license activation failure documented
+![Security Log 14170 Events](screenshots/04-event-viewer-security-log.png)
+![Failed Logon Event 4625](screenshots/04-event-viewer-security-failed-logon-4625.png)
+![Application Error 8198](screenshots/04-event-viewer-application-error-8198.png)
 
 ---
 
@@ -89,10 +77,10 @@ Reviewed the default Windows Defender Firewall configuration on DC01, created a 
 
 ### Key Findings
 - **Three firewall profiles confirmed active:** Domain (primary on DC01), Private, Public
-- **Default behavior:** Inbound connections blocked unless explicitly allowed. Outbound connections allowed unless explicitly blocked. Same logic as UFW on Linux.
+- **Default behavior:** Inbound connections blocked unless explicitly allowed. Outbound connections allowed unless explicitly blocked.
 - **Active Directory firewall rules visible:** Ports 389 (LDAP), 445 (SMB), 636 (LDAPS), 3268, 3269 all open — required for domain controller functionality.
 - **Custom rule created:** Block Port 9999 - LabTest — TCP inbound, all profiles, enabled
-- **Verified with PowerShell:** `Test-NetConnection -ComputerName localhost -Port 9999` returned `TcpTestSucceeded : False` confirming the rule is active and blocking traffic
+- **Verified with PowerShell:** `Test-NetConnection -ComputerName localhost -Port 9999` returned `TcpTestSucceeded : False`
 
 ### PowerShell Verification Output
 ComputerName     : localhost
@@ -109,12 +97,9 @@ TcpTestSucceeded : False
 - Public profile is most restrictive — used on untrusted networks
 - Test-NetConnection is the go-to PowerShell command for port testing
 
-### Screenshots
-- `04-firewall-overview.png` — three profiles confirmed active
-- `04-firewall-inbound-rules.png` — existing AD inbound rules visible
-- `04-firewall-custom-rule-created.png` — Block Port 9999 rule at top of list
-- `04-firewall-port-9999-blocked-test.png` — PowerShell confirming TcpTestSucceeded: False
-- `04-firewall-rule-deleted.png` — test rule removed after verification
+![Firewall Overview](screenshots/04-firewall-overview.png)
+![Custom Rule Created](screenshots/04-firewall-custom-rule-created.png)
+![Port 9999 Blocked Test](screenshots/04-firewall-port-9999-blocked-test.png)
 
 ---
 
@@ -124,7 +109,7 @@ TcpTestSucceeded : False
 Created a test folder (C:\NTFSTest), reviewed default inherited permissions, added domain user trainer01 with Read-only access, applied an explicit Deny on Write, then used Effective Access to verify the combined result.
 
 ### Key Findings
-- **Default inherited permissions on new folder:** CREATOR OWNER (Full Control), SYSTEM (Full Control), JOVILAB\Administrators (Full Control), JOVILAB\Users (Read & Execute). These are inherited automatically from C:\ — no manual configuration needed.
+- **Default inherited permissions on new folder:** CREATOR OWNER, SYSTEM, JOVILAB\Administrators, JOVILAB\Users — all inherited automatically from C:\ drive
 - **trainer01 added with Read permissions:** Read & Execute, List Folder Contents, Read — Allow. Write — explicitly Denied.
 - **Effective Access result for trainer01:**
   - ✅ Can: Traverse folder, List data, Read attributes, Read permissions
@@ -140,11 +125,9 @@ An explicit Deny always overrides Allow, regardless of group membership. Even if
 - Effective Access tab shows the final calculated result after all rules are combined
 - Principle of Least Privilege — grant only the minimum permissions required
 
-### Screenshots
-- `04-ntfs-permissions-default.png` — default inherited permissions on NTFSTest folder
-- `04-ntfs-trainer01-read-permissions.png` — trainer01 added with Read-only access
-- `04-ntfs-trainer01-deny-write.png` — explicit Write Deny applied
-- `04-ntfs-effective-permissions-trainer01.png` — Effective Access showing final result
+![Default NTFS Permissions](screenshots/04-ntfs-permissions-default.png)
+![trainer01 Read Permissions](screenshots/04-ntfs-trainer01-read-permissions.png)
+![Effective Permissions trainer01](screenshots/04-ntfs-effective-permissions-trainer01.png)
 
 ---
 
