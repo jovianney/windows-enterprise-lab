@@ -131,6 +131,72 @@ An explicit Deny always overrides Allow, regardless of group membership. Even if
 
 ---
 
+## Lab 5 — Device Manager
+
+### What I Did
+Opened Device Manager on DC01 and reviewed all hardware categories. Located the Display adapters driver properties and identified the Roll Back Driver function.
+
+### Key Findings
+- **No yellow warning triangles** — all drivers installed and functioning correctly on DC01
+- **Display adapters** — QEMU virtual GPU detected, driver properties accessible
+- **Roll Back Driver button available** — confirms Windows has a previous driver version saved and can revert if needed
+
+### When to Use Device Manager
+| Scenario | Action |
+|----------|--------|
+| Screen flickering after Windows Update | Display adapters → Properties → Driver → Roll Back Driver |
+| Unknown device showing up | Look for yellow exclamation mark → Update Driver |
+| Hardware causing conflicts | Right-click device → Disable Device |
+| Completely removing a driver | Right-click device → Uninstall Device |
+
+### Key Concepts
+- Yellow exclamation mark = driver problem requiring attention
+- Roll Back Driver = fastest fix when a driver update breaks something
+- Disable Device = turns off hardware without uninstalling the driver
+- Always check Device Manager first when hardware stops working after an update
+
+### Screenshots
+- `04-device-manager-overview.png` — full hardware tree, no warnings
+- `04-device-manager-driver-properties.png` — driver tab showing Roll Back Driver option
+
+![Device Manager Overview](screenshots/04-device-manager-overview.png)
+![Driver Properties](screenshots/04-device-manager-driver-properties.png)
+
+---
+
+## Lab 6 — System Configuration (msconfig)
+
+### What I Did
+Opened System Configuration via `msconfig` and reviewed all five tabs — General, Boot, Services, Startup, and Tools.
+
+### Key Findings
+- **Startup tab:** "Startup items are not enabled on this system" — expected on Windows Server. No consumer apps loading at boot.
+- **Tools tab:** Central launchpad for every diagnostic tool — Event Viewer, Device Manager, Performance Monitor, Task Manager all accessible from one place
+- **Boot tab:** Safe Mode configuration available without needing to press F8 on startup
+- **Services tab:** All Windows and third party services listed with ability to disable for troubleshooting
+
+### When to Use msconfig
+| Scenario | Action |
+|----------|--------|
+| PC slow on startup | Startup tab → disable unnecessary startup items |
+| Troubleshoot by isolating services | Services tab → Hide all Microsoft services → disable third party one by one |
+| Need to boot into Safe Mode | Boot tab → Safe boot checkbox |
+| Can't remember where a tool is | Tools tab → launch any diagnostic tool from one place |
+
+### Key Concepts
+- msconfig Startup tab = how you disable apps from launching at login without uninstalling them
+- Selective Startup mode = troubleshooting tool to isolate what's causing a problem
+- Safe Mode via Boot tab = cleaner than F8, stays set until you uncheck it
+- On Windows Server, Startup tab is empty — consumer startup apps don't exist on servers
+
+### Screenshots
+- `04-msconfig-overview.png` — General tab overview
+- `04-msconfig-startup.png` — Startup tab showing server behavior
+- `04-msconfig-tools.png` — Tools tab showing all diagnostic shortcuts
+
+![msconfig Startup](screenshots/04-msconfig-startup.png)
+![msconfig Tools](screenshots/04-msconfig-tools.png)
+
 ## What I Learned
 - Task Manager and Resource Monitor give layered visibility into system performance — start broad, drill down as needed
 - Event Viewer is the first stop during incident investigation — Security log captures all authentication events permanently
